@@ -3,4 +3,4 @@ def test_google(page):
 
     page.pause()
 
-    assert "Google" in page.title() #para terminar o teste tem que fechar o Playwright Inspector
+    assert "Google" in page.title() # para terminar o teste tem que fechar o Playwright Inspector
