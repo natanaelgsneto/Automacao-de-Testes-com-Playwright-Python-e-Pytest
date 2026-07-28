@@ -1,4 +1,6 @@
 def test_google(page):
     page.goto("https://www.google.com")
-    print(page.title())
-    assert "Google" in page.title()
+
+    page.pause()
+
+    assert "Google" in page.title() #para terminar o teste tem que fechar o Playwright Inspector
