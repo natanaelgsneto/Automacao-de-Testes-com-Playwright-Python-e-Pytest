@@ -1,5 +1,5 @@
-def test_get_by_roles(page):
+def test_get_by_label(page):
     page.goto("https://bootswatch.com/default/")
     page.pause()
-    page.locator("#navbarColor01").get_by_role('button', name='dropdown').click()
+    page.get_by_label('Valid input',exact=True).fill('Teste')
     #no playwight inspector clicar em Step Over e fecha a janela do playwight
