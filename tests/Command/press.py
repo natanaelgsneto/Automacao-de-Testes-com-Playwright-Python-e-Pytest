@@ -9,3 +9,6 @@ def test_press(page):
     page.keyboard.type("1234", delay=500)
 
     page.wait_for_timeout(5000)
+
+def test_press(page):
+    page.goto("https://bootswatch.com/default/")
