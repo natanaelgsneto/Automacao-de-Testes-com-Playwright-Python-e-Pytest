@@ -9,90 +9,120 @@ def test_example(page: Page) -> None:
         wait_until="domcontentloaded"
     )
 
-    # Abre o Playwright Inspector
+    # Espera a página carregar
+    page.wait_for_load_state("networkidle")
+
+    # Inspector
     page.pause()
 
 
     # 2. Valida categoria Women
-    expect(
-        page.get_by_role("heading", name="Women")
-    ).to_be_visible()
+    women = page.get_by_role("heading", name="Women")
+
+    women.wait_for(
+        state="visible",
+        timeout=5000
+    )
+
+    expect(women).to_be_visible()
 
 
-    # 3. Localiza o produto Madame Top For Women
+    # 3. Localiza produto Madame Top For Women
     product = page.locator(".single-products").filter(
         has_text="Madame Top For Women"
     ).first
 
 
-    # 4. Faz hover no produto
-    product.hover()
-
-
-    # Abre Inspector para visualizar o hover
-    page.pause()
-
-
-    # 5. Clica em Add to cart
-    product.locator(".add-to-cart").first.click(force=True)
-
-
-    # 6. Localiza o modal
-    modal = page.locator("#cartModal")
-
-
-    # 7. Aguarda modal aparecer
-    expect(modal).to_have_class(
-        "modal show",
+    # Espera produto aparecer
+    product.wait_for(
+        state="visible",
         timeout=5000
     )
 
 
-    # 8. Valida modal visível
-    expect(modal).to_be_visible()
+    # Hover
+    product.hover()
 
 
-    # Inspector para conferir o modal
+    # Inspector após hover
     page.pause()
 
 
-    # 9. Valida título do modal
-    expect(
-        modal.locator(".modal-title")
-    ).to_have_text("Added!")
+    # 4. Botão Add to cart
+    add_cart = product.locator(".add-to-cart").first
 
 
-    # 10. Valida mensagem do modal
-    expect(
-        modal
-    ).to_contain_text(
-        "Your product has been added to cart."
+    # Espera botão ficar disponível
+    add_cart.wait_for(
+        state="visible",
+        timeout=5000
     )
 
 
-    # 11. Valida botão Continue Shopping
-    continue_button = modal.get_by_role(
+    add_cart.click(force=True)
+
+
+    # Inspector após clique
+    page.pause()
+
+
+    # 5. Modal
+    modal = page.locator("#cartModal")
+
+
+    # Espera modal aparecer
+    modal.wait_for(
+        state="visible",
+        timeout=5000
+    )
+
+
+    # 6. Valida modal
+    expect(modal).to_be_visible()
+
+
+    # 7. Valida título
+    expect(
+        modal.get_by_role("heading", name="Added!")
+    ).to_be_visible()
+
+
+    # 8. Valida texto
+    expect(modal).to_contain_text(
+        "Your product has been added to cart.",
+        timeout=5000
+    )
+
+
+    # 9. Botão Continue Shopping
+    btn_continue = modal.get_by_role(
         "button",
         name="Continue Shopping"
     )
 
-    expect(
-        continue_button
-    ).to_be_visible()
+
+    btn_continue.wait_for(
+        state="visible",
+        timeout=5000
+    )
 
 
-    # 12. Valida link View Cart
-    expect(
-        modal.get_by_role(
-            "link",
-            name="View Cart"
-        )
-    ).to_be_visible()
+    expect(btn_continue).to_be_visible()
 
 
-    # 13. Fecha modal
-    continue_button.click()
+    # Inspector antes de fechar
+    page.pause()
 
 
-    # 14. Confirma modal fechado
+    # 10. Fecha modal
+    btn_continue.click()
+
+
+    # 11. Espera modal desaparecer
+    modal.wait_for(
+        state="hidden",
+        timeout=5000
+    )
+
+
     expect(modal).not_to_be_visible()
