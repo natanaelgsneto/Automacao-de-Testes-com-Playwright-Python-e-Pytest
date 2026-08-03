@@ -34,3 +34,4 @@ def test_hover(page: Page):
 
     # (Opcional) Clica em Continue Shopping para fechar o modal
     btn_continue.click()
+    page.pause()
