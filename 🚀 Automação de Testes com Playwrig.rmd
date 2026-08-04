@@ -1,0 +1,93 @@
+🚀 Automação de Testes com Playwright, Python e Pytest
+📥 1. Clonando o Repositório
+
+Abra o terminal (PowerShell, CMD ou Git Bash) e clone o repositório para sua máquina:
+
+git clone https://github.com/SEU-USUARIO/SEU-REPOSITORIO.git
+cd Automacao-de-Testes-com-Playwright-Python-e-Pytest
+⚙️ 2. Configurando o Ambiente do Projeto
+
+Acesse a pasta do projeto onde estão as configurações e dependências:
+
+cd PageObjects
+Passo A – Criar o Ambiente Virtual (.venv)
+
+Crie um ambiente virtual isolado para o projeto:
+
+uv venv
+Passo B – Ativar o Ambiente Virtual
+Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+Git Bash / Linux / macOS
+source .venv/bin/activate
+Passo C – Instalar as Dependências
+
+Com o ambiente virtual ativado, instale as bibliotecas necessárias:
+
+uv pip install pytest pytest-playwright playwright
+Passo D – Instalar os Navegadores do Playwright
+
+O Playwright utiliza versões próprias dos navegadores. Execute:
+
+uv run playwright install
+📂 Estrutura do Projeto
+Automacao-de-Testes-com-Playwright-Python-e-Pytest/
+│
+├── PageObjects/
+│   ├── .venv/                 # Ambiente virtual
+│   ├── Tests/
+│   │   ├── Treinamento/       # Exercícios e exemplos
+│   │   └── test_first.py      # Primeiro teste
+│   └── pyproject.toml         # Dependências do projeto
+│
+└── README.md                  # Documentação
+🏃‍♂️ 3. Executando os Testes
+Executar todos os testes (Headless)
+
+Executa os testes em segundo plano, sem abrir o navegador.
+
+uv run pytest
+Executar todos os testes (Headed)
+
+Executa os testes abrindo a janela do navegador.
+
+uv run pytest --headed
+Executar um arquivo específico
+uv run pytest Tests/test_first.py --headed
+🔧 4. Configurando o PyCharm
+
+Para que o navegador seja aberto ao executar os testes pelo botão ▶ Play do PyCharm:
+
+Clique no menu suspenso ao lado do botão ▶ Play.
+Selecione Edit Configurations...
+No campo Additional pytest options (ou Additional arguments), adicione:
+--headed
+Clique em Apply e depois em OK.
+
+Agora, sempre que executar um teste pelo botão ▶ Play, o navegador será aberto.
+
+🐞 5. Depuração com o Playwright Inspector
+
+O método page.pause() permite interromper a execução do teste e abrir automaticamente o Playwright Inspector, facilitando a identificação de elementos, criação de seletores e análise do fluxo da automação.
+
+Exemplo
+from playwright.sync_api import Page
+
+def test_exemplo(page: Page):
+    page.goto("https://www.google.com")
+
+    page.pause()
+
+    page.get_by_role("textbox").fill("Playwright")
+
+Durante a pausa é possível:
+
+🔍 Inspecionar elementos da página.
+🎯 Obter seletores automaticamente.
+▶ Continuar a execução clicando em Resume.
+⏭ Executar passo a passo (Step Over).
+🧪 Testar seletores antes de utilizá-los no código.
+💡 Dicas
+Mantenha o ambiente virtual sempre ativado durante o desenvolvimento.
+Execute uv run playwright install apenas na primeira configuração (ou quando necessário atualizar os navegadores).
+Utilize page.pause() somente durante a depuração. Antes de finalizar seus testes, remova ou comente essa linha para evitar interrupções durante a execução automatizada.
