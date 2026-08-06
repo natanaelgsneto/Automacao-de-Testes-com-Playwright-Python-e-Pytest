@@ -1,15 +1,120 @@
+Juntei tudo em um único README completo, com a ordem correta (do zero até execução, debug, POM, relatórios e CI/CD).
+
+Crie/substitua seu arquivo:
+
+```text
+README.md
+```
+
+pelo conteúdo abaixo:
+
+```markdown
 # 🚀 Automação de Testes com Playwright, Python e Pytest
 
-Projeto desenvolvido para estudos de automação de testes utilizando **Python**, **Playwright** e **Pytest**.
+Projeto desenvolvido para estudos e prática de **Automação de Testes Web** utilizando:
+
+- 🐍 Python
+- 🎭 Playwright
+- 🧪 Pytest
+- ⚡ uv
+- 💻 PyCharm
+- 🔧 Git/GitHub
+
+O objetivo deste projeto é demonstrar a criação de testes automatizados, organização de código, boas práticas de QA Automation e execução de testes utilizando Playwright com Pytest.
+
+---
+
+# 📌 Objetivos do Projeto
+
+Neste projeto são praticados:
+
+- Navegação em páginas Web
+- Localizadores (Locators)
+- get_by_role
+- get_by_label
+- get_by_text
+- XPath e CSS Selector
+- Click
+- Double Click
+- Hover
+- Fill
+- Type
+- Select Option
+- Checkbox
+- Radio Button
+- Assertions
+- Esperas automáticas
+- Page Object Model
+- Playwright Inspector
+- Execução com Pytest
+
+---
+
+# ✅ Pré-requisitos
+
+Antes de iniciar, tenha instalado:
+
+## Python
+
+Recomendado:
+
+```
+
+Python 3.12+
+
+````
+
+Verificar:
+
+```bash
+python --version
+````
+
+---
+
+## Git
+
+Verificar:
+
+```bash
+git --version
+```
+
+---
+
+## uv
+
+O projeto utiliza o **uv** para criar ambientes virtuais e gerenciar dependências.
+
+Verificar:
+
+```bash
+uv --version
+```
+
+Instalar:
+
+```bash
+pip install uv
+```
 
 ---
 
 # 📥 1. Clonando o Repositório
 
-Abra o terminal (PowerShell, CMD ou Git Bash) e clone o repositório:
+Abra o terminal:
+
+PowerShell, CMD ou Git Bash.
+
+Clone o projeto:
 
 ```bash
 git clone https://github.com/SEU-USUARIO/SEU-REPOSITORIO.git
+```
+
+Entre na pasta:
+
+```bash
 cd Automacao-de-Testes-com-Playwright-Python-e-Pytest
 ```
 
@@ -17,23 +122,25 @@ cd Automacao-de-Testes-com-Playwright-Python-e-Pytest
 
 # ⚙️ 2. Configurando o Ambiente do Projeto
 
-Acesse a pasta onde estão as configurações do projeto:
+## Criar ambiente virtual
 
-```bash
-cd PageObjects
-```
-
-## Passo 1 – Criar o ambiente virtual
+Na raiz do projeto:
 
 ```bash
 uv venv
 ```
 
+Será criada a pasta:
+
+```
+.venv/
+```
+
 ---
 
-## Passo 2 – Ativar o ambiente virtual
+## Ativar ambiente virtual
 
-### Windows (PowerShell)
+### Windows PowerShell
 
 ```powershell
 .venv\Scripts\Activate.ps1
@@ -47,7 +154,9 @@ source .venv/bin/activate
 
 ---
 
-## Passo 3 – Instalar as dependências
+# 📦 3. Instalar Dependências
+
+Instalar tudo:
 
 ```bash
 uv pip install pytest pytest-playwright playwright
@@ -55,127 +164,435 @@ uv pip install pytest pytest-playwright playwright
 
 ---
 
-## Passo 4 – Instalar os navegadores do Playwright
+# 🌐 4. Instalar Navegadores do Playwright
+
+Executar:
 
 ```bash
 uv run playwright install
 ```
 
+Este comando instala:
+
+* Chromium
+* Firefox
+* WebKit
+
 ---
 
-# 📂 Estrutura do Projeto
+# 📂 5. Estrutura do Projeto
 
-```text
-Automacao-de-Testes-com-Playwright-Python-e-Pytest/
+Exemplo:
+
+```
+Automacao-de-Testes-com-Playwright-Python-e-Pytest
 │
-├── PageObjects/
-│   ├── .venv/                 # Ambiente virtual
-│   ├── Tests/
-│   │   ├── Treinamento/       # Exercícios e exemplos
-│   │   └── test_first.py      # Primeiro teste
-│   └── pyproject.toml         # Configurações do projeto
+├── .venv/
+│   └── Ambiente virtual
 │
-└── README.md                  # Documentação
+├── pages/
+│   ├── login_page.py
+│   └── home_page.py
+│
+├── tests/
+│   │
+│   ├── Command/
+│   │   └── hover.py
+│   │
+│   ├── fill/
+│   │   └── checkanduncheck.py
+│   │
+│   ├── Expect/
+│   │   └── expect.py
+│   │
+│   └── test_first.py
+│
+├── pyproject.toml
+│
+├── .gitignore
+│
+└── README.md
 ```
 
 ---
 
-# ▶️ 3. Executando os Testes
+# 🧪 6. Pytest + Playwright
 
-## Executar todos os testes (Headless)
+O pytest-playwright fornece automaticamente a fixture:
 
-Executa os testes em segundo plano, sem abrir o navegador.
+```
+page
+```
+
+Ela cria uma página do navegador para cada teste.
+
+Exemplo:
+
+```python
+from playwright.sync_api import Page
+
+
+def test_google(page: Page):
+
+    page.goto(
+        "https://google.com"
+    )
+```
+
+---
+
+# ▶️ 7. Executando os Testes
+
+## Executar todos os testes
+
+Modo invisível:
 
 ```bash
 uv run pytest
 ```
 
+Este modo é chamado:
+
+```
+Headless
+```
+
+O navegador roda em segundo plano.
+
 ---
 
-## Executar todos os testes (Headed)
-
-Executa os testes abrindo a janela do navegador.
+# 🌎 Executar abrindo o navegador
 
 ```bash
 uv run pytest --headed
 ```
 
----
+## O que significa --headed?
 
-## Executar um teste específico
+O parâmetro:
 
-```bash
-uv run pytest Tests/test_first.py --headed
 ```
-
----
-
-# 🔧 4. Configurando o PyCharm
-
-Para que os testes sejam executados com o navegador aberto ao clicar no botão **▶ Play**:
-
-1. Clique no menu suspenso ao lado do botão **▶ Play**.
-2. Selecione **Edit Configurations...**
-3. No campo **Additional pytest options** (ou **Additional arguments**), informe:
-
-```text
 --headed
 ```
 
-4. Clique em **Apply**.
-5. Clique em **OK**.
+faz o navegador abrir na tela durante a execução.
+
+Com ele é possível:
+
+✅ acompanhar os passos do teste
+✅ visualizar cliques e preenchimentos
+✅ encontrar erros visualmente
+✅ utilizar o Playwright Inspector
 
 ---
 
-# 🐞 5. Depuração com o Playwright Inspector
+# Executar teste específico
 
-O método `page.pause()` interrompe a execução do teste e abre o **Playwright Inspector**, permitindo inspecionar elementos, criar seletores e acompanhar a execução da automação.
+Exemplo:
 
-## Exemplo
+```bash
+uv run pytest tests/test_first.py --headed
+```
+
+---
+
+# Executar apenas uma função
+
+Exemplo:
+
+Arquivo:
+
+```
+hover.py
+```
+
+Função:
+
+```python
+def test_hover(page):
+```
+
+Comando:
+
+```bash
+uv run pytest tests/Command/hover.py::test_hover --headed
+```
+
+---
+
+# 💻 8. Configurando PyCharm
+
+Para executar com navegador aberto pelo botão ▶ Play:
+
+1. Abrir:
+
+```
+Run
+```
+
+2. Selecionar:
+
+```
+Edit Configurations...
+```
+
+3. Escolher:
+
+```
+pytest
+```
+
+4. Em:
+
+```
+Additional pytest options
+```
+
+Adicionar:
+
+```
+--headed
+```
+
+5. Clique:
+
+```
+Apply → OK
+```
+
+Agora ao clicar em ▶ o navegador abrirá.
+
+---
+
+# 🐞 9. Playwright Inspector
+
+Para depuração utilize:
+
+```python
+page.pause()
+```
+
+Exemplo:
 
 ```python
 from playwright.sync_api import Page
 
+
 def test_exemplo(page: Page):
-    page.goto("https://www.google.com")
+
+    page.goto(
+        "https://google.com"
+    )
 
     page.pause()
 
-    page.get_by_role("textbox").fill("Playwright")
+    page.get_by_role(
+        "textbox"
+    ).fill(
+        "Playwright"
+    )
 ```
-
-## Durante a pausa é possível
-
-- 🔍 Inspecionar elementos da página.
-- 🎯 Capturar seletores automaticamente.
-- ▶️ Continuar a execução clicando em **Resume**.
-- ⏭️ Executar passo a passo (**Step Over**).
-- 🧪 Validar seletores antes de utilizá-los no código.
 
 ---
 
-# 💡 Dicas
+Durante a pausa é possível:
 
-- Mantenha o ambiente virtual sempre ativado.
-- Execute `uv run playwright install` apenas na primeira configuração ou quando atualizar o Playwright.
-- Utilize `page.pause()` apenas durante a depuração.
-- Antes de finalizar os testes, remova ou comente `page.pause()` para evitar interrupções durante a execução automática.
+🔍 Inspecionar elementos
+
+🎯 Criar seletores automaticamente
+
+▶ Resume
+
+⏭ Step Over
+
+🧪 Validar Locators
+
+---
+
+# 🏗️ 10. Page Object Model (POM)
+
+O projeto utiliza o padrão:
+
+```
+Page Object Model
+```
+
+Objetivo:
+
+* Separar páginas dos testes
+* Evitar código duplicado
+* Facilitar manutenção
+
+Exemplo:
+
+```
+pages/
+
+login_page.py
+```
+
+Código:
+
+```python
+class LoginPage:
+
+    def __init__(self,page):
+        self.page = page
+
+
+    def acessar(self):
+
+        self.page.goto(
+            "https://site.com/login"
+        )
+```
+
+---
+
+# 📊 11. Relatório HTML
+
+Instalar:
+
+```bash
+uv pip install pytest-html
+```
+
+Executar:
+
+```bash
+uv run pytest --html=report.html
+```
+
+Será criado:
+
+```
+report.html
+```
+
+---
+
+# 📸 12. Evidências de Teste
+
+O Playwright permite:
+
+* Screenshot
+* Vídeo
+* Trace
+
+Exemplo:
+
+```bash
+uv run pytest --tracing on
+```
+
+---
+
+# 🚀 13. CI/CD GitHub Actions
+
+Fluxo:
+
+```
+Código
+ |
+Git Commit
+ |
+GitHub
+ |
+GitHub Actions
+ |
+Pytest
+ |
+Resultado
+```
+
+Benefícios:
+
+* Execução automática
+* Validação do código
+* Integração contínua
+
+---
+
+# 🧹 14. Arquivo .gitignore
+
+Criar:
+
+```
+.gitignore
+```
+
+Adicionar:
+
+```
+.venv/
+
+__pycache__/
+
+.pytest_cache/
+
+*.pyc
+
+.idea/
+
+report.html
+```
+
+---
+
+# 💡 15. Boas Práticas
+
+✅ Usar nomes claros nos testes
+
+✅ Criar Page Objects
+
+✅ Usar Locators estáveis
+
+✅ Evitar código duplicado
+
+✅ Remover `page.pause()` antes da entrega
+
+✅ Manter dependências atualizadas
 
 ---
 
 # 🛠️ Tecnologias Utilizadas
 
-- Python
-- Playwright
-- Pytest
-- pytest-playwright
-- uv
-- PyCharm
+| Tecnologia        | Uso                     |
+| ----------------- | ----------------------- |
+| Python            | Linguagem               |
+| Playwright        | Automação Web           |
+| Pytest            | Execução dos testes     |
+| pytest-playwright | Integração              |
+| uv                | Ambiente e dependências |
+| PyCharm           | IDE                     |
+| Git/GitHub        | Versionamento           |
 
 ---
 
 # 📚 Referências
 
-- Playwright
-- Pytest
-- Python
+Playwright:
+
+[https://playwright.dev/](https://playwright.dev/)
+
+Pytest:
+
+[https://docs.pytest.org/](https://docs.pytest.org/)
+
+Python:
+
+[https://www.python.org/](https://www.python.org/)
+
+---
+
+# 👨‍💻 Autor
+
+Projeto desenvolvido para estudos de:
+
+**QA Automation
+Python + Playwright + Pytest**
+
+```
+
+Esse arquivo já está no formato de **README de portfólio para GitHub**.
+```
