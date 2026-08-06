@@ -35,3 +35,13 @@ def test_hover(page: Page):
     # (Opcional) Clica em Continue Shopping para fechar o modal
     btn_continue.click()
     page.pause()
+    # para rodar no cmd:
+    # uv    run    pytest    tests / Command / hover4.py - -headed
+    # Faça    estas    verificações:    1.    Verifique    a    configuração    do    PyCharm
+
+    # Vá    em:    Run → Edit    Configurations...
+
+    # Na    configuração    do    pytest, veja    se    em    Additional    pytest  options  existe:  --headed
+    # Se    não    existir, adicione    e    clique    em    Apply    e    OK.
+
+    # 2.    Execute    pelo    terminal    na    pasta    do    projeto    Abra  um  terminal  na  pasta  do   projeto  e   execute:  cd "C:\Users\NatanaelNote\PycharmProjects\Automacao-de-Testes-com-Playwright-Python-e-Pytest"  uv  run  pytest  tests / Command / hover4.py - -headed - s

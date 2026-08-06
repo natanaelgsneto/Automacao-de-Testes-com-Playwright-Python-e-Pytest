@@ -17,3 +17,26 @@ def test_hover(page: Page):
     expect(page.get_by_role('button', name='Continue Shopping')).to_be_enabled()
     page.get_by_role('button', name='Continue Shopping').click()
     expect(page.locator('#cartModal')).not_to_be_visible()
+# ==========================================================
+# OPÇÃO --headed
+# ==========================================================
+
+# O parâmetro --headed serve para abrir o navegador
+# durante a execução do teste.
+#
+# Com --headed:
+# - O Chrome/Chromium abre na tela
+# - Você consegue acompanhar os cliques, preenchimentos e ações
+# - É útil para aprender, depurar erros e usar o Playwright Inspector
+#
+# Exemplo:
+# uv run pytest Command/hover.py --headed
+
+
+# Sem --headed:
+# - O teste roda em modo invisível (headless)
+# - O navegador executa em segundo plano
+# - É mais usado em automação de testes no CI/CD
+#
+# Exemplo:
+# uv run pytest Command/hover.py
