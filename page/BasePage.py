@@ -15,4 +15,4 @@ class BasePage:
         self.page.goto('https://automationexercise.com/login')
 
     def acessar_carrinho(self):
-        self.page.goto('https://automationexercise.com/view_cart')
+        self.botao_cadastro_login.click()
