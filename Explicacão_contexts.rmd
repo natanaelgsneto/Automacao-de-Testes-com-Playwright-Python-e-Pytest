@@ -1,2 +1,6 @@
 Para saber a diferença clique no link abaixo:
 https://keep.google.com/?source=gemini#NOTE/1mQ802uaPwMErVt2ehewO67k87ls5Q-IkcUxo6T19fK2D2zpfQErGKpaQzvkSCw
+
+
+Documentação:
+https://docs.pytest.org/en/6.2.x/fixture.html#fixture-scopes
