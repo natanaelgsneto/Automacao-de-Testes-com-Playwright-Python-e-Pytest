@@ -177,5 +177,7 @@ def test_exemplo(page: Page):
 # 📚 Referências
 
 - Playwright
-- Pytest
+- Pytest 
 - Python
+#anotações:
+#- https://keep.google.com/?source=gemini#home

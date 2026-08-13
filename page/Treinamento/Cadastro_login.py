@@ -1,11 +1,13 @@
 from page.BasePage import BasePage
 
+
 class CadastroLogin(BasePage):
 
     def __init__(self, page):
         super().__init__(page)
-        self.input_email_login = page.locator("form").filter(
-            has_text="Login").get_by_placeholder("Email Address")
+        # Altere esta linha para usar o seletor baseado no data-qa oficial do site:
+        self.input_email_login = page.locator("[data-qa='login-email']")
+
         self.input_senha_login = page.get_by_role("textbox", name="Password")
         self.botao_login = page.get_by_role("button", name="Login")
         self.input_nome_cadastro = page.get_by_role("textbox", name="Name")

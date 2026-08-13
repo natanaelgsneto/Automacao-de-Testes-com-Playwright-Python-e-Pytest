@@ -9,10 +9,10 @@ class BasePage:
         self.botao_logout = page.get_by_role("link", name="Logout")
 
     def acessar_home(self):
-        self.page.goto('https://automationexercise.com/')
+        self.page.goto('/')
 
     def acessar_cadastro_login(self):
-        self.page.goto('https://automationexercise.com/login')
+        self.page.goto('/login')
 
     def acessar_carrinho(self):
-        self.botao_cadastro_login.click()
+        self.page.goto('view_cart')
