@@ -13,3 +13,4 @@ def test_login_valido(page: Page):
     login.acessar_home()
     login.acessar_cadastro_login()
     login.fazer_login(email='test@testecab.com', senha='123')
+    page.pause()
