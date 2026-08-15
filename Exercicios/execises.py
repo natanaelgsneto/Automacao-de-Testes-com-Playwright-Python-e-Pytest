@@ -1,87 +1,56 @@
-import re
 from playwright.sync_api import Page, expect
 
 
 def test_example(page: Page) -> None:
-    page.get_by_role("link", name=" Signup / Login").click()
-    page.get_by_role("textbox", name="Name").click()
-    page.get_by_role("textbox", name="Name").fill("roberto")
-    page.get_by_role("textbox", name="Name").press("Tab")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").fill("cgmail.com")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").press("ArrowRight")
-    page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").fill("c@gmail.com")
+    page.goto("https://automationexercise.com/")
+
+    # Entrar em Signup / Login
+    page.get_by_role("link", name="Signup / Login").click()
+
+    # Formulário de cadastro
+    page.get_by_placeholder("Name").fill("roberto")
+
+    page.locator("form").filter(
+        has_text="Signup"
+    ).get_by_placeholder("Email Address").fill(
+        "roberto123456789@gmail.com"
+    )
+
     page.get_by_role("button", name="Signup").click()
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").click()
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowLeft")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").press("ArrowRight")
-    page.locator("form").filter(has_text="Email Address already exist!").get_by_placeholder("Email Address").fill("c22@gmail.com")
-    page.get_by_role("button", name="Signup").click()
-    page.locator("#uniform-id_gender1").click()
-    page.locator("div").filter(has_text="Password *").nth(4).click()
-    page.get_by_role("textbox", name="Password *").click()
-    page.get_by_role("textbox", name="Password *").fill("teste@123")
-    page.locator("#days").select_option("4")
-    page.locator("#months").select_option("4")
-    page.locator("#years").select_option("2019")
-    page.get_by_text("Receive special offers from").click()
-    page.get_by_role("checkbox", name="Receive special offers from").uncheck()
-    page.get_by_role("checkbox", name="Receive special offers from").check()
-    page.get_by_role("checkbox", name="Sign up for our newsletter!").check()
-    page.get_by_role("textbox", name="First name *").click()
-    page.get_by_role("textbox", name="First name *").fill("natan")
-    page.get_by_role("textbox", name="First name *").press("Tab")
-    page.get_by_role("textbox", name="Last name *").fill("guedes")
-    page.get_by_role("textbox", name="Last name *").press("Tab")
-    page.get_by_role("textbox", name="Company", exact=True).fill("ti")
-    page.get_by_role("textbox", name="Company", exact=True).press("Tab")
-    page.get_by_role("textbox", name="Address * (Street address, P.").fill("rua da republica")
-    page.get_by_role("textbox", name="Address * (Street address, P.").press("Tab")
-    page.get_by_role("textbox", name="Address 2").press("Tab")
-    page.get_by_label("Country *").press("Tab")
-    page.get_by_label("Country *").select_option("New Zealand")
-    page.get_by_role("textbox", name="State *").click()
-    page.get_by_role("textbox", name="State *").fill("pb")
-    page.get_by_role("textbox", name="City * Zipcode *").click()
-    page.get_by_role("textbox", name="City * Zipcode *").fill("jo")
-    page.get_by_role("textbox", name="City * Zipcode *").press("Dead")
-    page.get_by_role("textbox", name="City * Zipcode *").fill("joão pessoa")
-    page.locator("#zipcode").click()
-    page.locator("#zipcode").fill("58074590")
-    page.locator("#zipcode").press("Tab")
-    page.get_by_role("textbox", name="Mobile Number *").fill("988875470")
-    page.get_by_role("button", name="Create Account").click()
-    page.get_by_text("Account Created!").click()
-    expect(page.get_by_text("Account Created!")).to_be_visible()
-    page.get_by_role("link", name="Continue").click()
-    page.locator("iframe[name=\"aswift_2\"]").content_frame.get_by_role("button", name="Close ad").click()
-    page.get_by_role("link", name=" Delete Account").click()
-    expect(page.get_by_text("Account Deleted!")).to_be_visible()
-    page.get_by_role("link", name="Continue").click()
+
+    # Verifica se chegou na página de criação da conta
+    expect(
+        page.get_by_text("Enter Account Information")
+    ).to_be_visible()
+
+    # Gênero
+    page.locator("#id_gender1").check()
+
+    # Senha
+    page.get_by_label("Password").fill("Roberto@123")
+
+    # Data de nascimento
+    page.locator("#days").select_option("10")
+    page.locator("#months").select_option("5")
+    page.locator("#years").select_option("1990")
+
+    # Nome
+    page.get_by_label("First name").fill("Roberto")
+    page.get_by_label("Last name").fill("Silva")
+
+    # Endereço principal
+    page.locator("#address1").fill("Rua Teste")
+
+    # Estado
+    page.get_by_label("State").fill("Paraiba")
+
+    # Cidade
+    page.get_by_label("City").fill("Joao Pessoa")
+
+    # CEP
+    page.get_by_label("Zipcode").fill("58000000")
+
+    # Telefone
+    page.get_by_label("Mobile Number").fill("83999999999")
+
+    page.pause()
