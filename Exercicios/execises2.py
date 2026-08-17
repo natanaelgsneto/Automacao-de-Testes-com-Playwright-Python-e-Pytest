@@ -16,3 +16,4 @@ def test_example(page: Page) -> None:
     page.get_by_role("button", name="Login").click()
     expect(page.get_by_text("Your email or password is")).to_be_visible()
     #para rodar: uv run pytest Exercicios/execises2.py -v -s --headed
+    page.pause()
