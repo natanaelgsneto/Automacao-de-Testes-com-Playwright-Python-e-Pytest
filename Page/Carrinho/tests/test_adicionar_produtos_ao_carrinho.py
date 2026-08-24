@@ -1,5 +1,5 @@
-from Page.Carrinho.Produto import Produtos
-from Page.Carrinho.Carrinho import Carrinho
+from Page.Carrinho.tests.Produtos import Produtos
+from Page.Carrinho.tests.Carrinho import Carrinho
 
 
 def test_adicionar_produtos_ao_carrinho(page):
