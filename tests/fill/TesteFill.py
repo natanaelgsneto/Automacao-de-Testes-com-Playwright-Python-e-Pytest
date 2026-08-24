@@ -8,3 +8,4 @@ def test_example(page: Page) -> None:
     page.get_by_role("textbox", name="Name").fill('Natanael', timeout=100000)
     page.locator("form").filter(has_text="Signup").get_by_placeholder("Email Address").fill('natanael@gmail.com')
     page.get_by_role("button", name="Signup").click()
+#python -m pytest .\tests\nova_aba\abrir_nova_guia.py --headed
