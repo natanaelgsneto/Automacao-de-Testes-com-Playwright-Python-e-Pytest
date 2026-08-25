@@ -17,6 +17,21 @@ def test_baixar_arquivos(page: Page) -> None:
         "domcontentloaded"
     )
 
+    print(
+        "URL atual:",
+        page.url
+    )
+
+    print(
+        "Título:",
+        page.title()
+    )
+
+    print(
+        "Botões encontrados:",
+        page.get_by_role("button").all_inner_texts()
+    )
+
     page.pause()
 
     # ==========================================================
@@ -148,13 +163,19 @@ def test_baixar_arquivos(page: Page) -> None:
     # 10. CRIAR PASTA DE DOWNLOAD
     # ==========================================================
 
-    pasta_download = Path(
-        r"C:\Users\NatanaelNote\PycharmProjects\UploadDownload\Store\Download"
+    pasta_download = (
+        Path(__file__).resolve().parent.parent
+        / "Store"
+        / "Download"
     )
 
     pasta_download.mkdir(
         parents=True,
         exist_ok=True
+    )
+
+    print(
+        f"Pasta de download: {pasta_download}"
     )
 
     # ==========================================================
@@ -204,6 +225,10 @@ def test_baixar_arquivos(page: Page) -> None:
         / download.suggested_filename
     )
 
+    print(
+        f"Caminho final: {caminho_arquivo}"
+    )
+
     # ==========================================================
     # 15. SALVAR DOWNLOAD
     # ==========================================================
@@ -227,9 +252,11 @@ def test_baixar_arquivos(page: Page) -> None:
     print(
         "=========================================="
     )
+
     print(
         "DOWNLOAD REALIZADO COM SUCESSO!"
     )
+
     print(
         "=========================================="
     )
