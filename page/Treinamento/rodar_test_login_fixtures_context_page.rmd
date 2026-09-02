@@ -1,0 +1,14 @@
+
+Para rodar o seu teste passo a passo,
+abra o PowerShell, certifique-se de estar na pasta correta do projeto e
+execute o comando otimizado:
+#`cd C:\Users\NatanaelNote\PycharmProjects\Automacao-de-Testes-com-Playwright-Python-e-Pytest"`
+seguido de `uv run pytest --import-mode=importlib page/test_login.py::test_login_valido -v -s`,
+onde o `uv run` gerencia o ambiente virtual,
+o `--import-mode=importlib` corrige o carregamento do arquivo `conftest.py`,
+e o restante direciona a execução para a função de teste específica com logs
+detalhados e visíveis no console
+
+
+(PycharmProjects) PS C:\Users\NatanaelNote\PycharmProjects\Automacao-de-Testes-com-Playwright-Python-e-Pytest>
+uv run pytest --import-mode=importlib page/test_login.py::test_login_valido -v -s --headed
