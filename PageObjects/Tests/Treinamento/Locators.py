@@ -1,25 +1,44 @@
-from playwright.sync_api import Page, expect
 
 
-def test_hover(page: Page):
-    # 1. Navega aguardando o carregamento do DOM
-    page.goto('https://automationexercise.com', wait_until='domcontentloaded')
+def test_get_by_role(page):
+    '''page.goto('https://automationexercise.com/')
+    page.pause()
+    page.get_by_role('link', name=' Signup / Login').click()
+    page.get_by_role('button', name='Login').click()'''
+    page.goto('https://bootswatch.com/default/')
+    page.pause()
+    page.locator('#navbarColor01').get_by_role('button', name='Dropdown').click()
 
-    # 2. Localiza o produto e faz o hover
-    product = page.locator('.single-products:visible').filter(has_text='Madame Top For Women')
-    product.hover()
 
-    # 3. Clica no botão "Add to cart" do overlay
-    product.locator('.product-overlay a:has-text("Add to cart")').click()
+def test_get_by_text(page):
+    page.goto('https://automationexercise.com/')
+    page.pause()
+    page.get_by_text('Full-Fledged practice website for').first.click()
 
-    # 4. Localiza o modal do carrinho
-    modal = page.locator('#cartModal')
-    expect(modal).to_be_visible()
+def test_get_by_label(page):
+    page.goto('https://bootswatch.com/default/')
+    page.pause()
+    page.get_by_label('Valid input', exact=True).fill('Teste')
+    page.get_by_label("Recipient's username", exact=True).fill('Teste')
 
-    # 5. Localiza e clica no botão "Continue Shopping"
-    btn_continue = modal.locator('button:has-text("Continue Shopping")')
-    expect(btn_continue).to_be_visible()
-    btn_continue.click()
 
-    # 6. Valida que o modal foi fechado
-    expect(modal).not_to_be_visible()
+def test_get_by_placeholder(page):
+    page.goto('https://automationexercise.com/login')
+    page.pause()
+    page.get_by_placeholder('Name').fill('Teste')
+
+def test_get_by_title(page):
+    page.goto('https://bootswatch.com/default/')
+    page.pause()
+    page.get_by_title('Source Title').nth(1).click()
+
+
+def test_locator_css(page):
+    page.goto('https://automationexercise.com/')
+    page.pause()
+    page.locator('#accordian .panel-title').first.click()
+
+def test_locator_xpath(page):
+    page.goto('https://automationexercise.com/login')
+    page.pause()
+    page.locator('//*[@id="form"]/div/div/div[1]/div/form/button').click()
