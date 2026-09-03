@@ -4,7 +4,7 @@
     <content url="file://$MODULE_DIR$/PageObjects">
       <excludeFolder url="file://$MODULE_DIR$/PageObjects/.venv" />
     </content>
-    <orderEntry type="jdk" jdkName="~\PycharmProjects\Automacao-de-Testes-com-Playwright-Python-e-Pytest\PageObjects\.venv" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="~\OneDrive\Documentos\Automacao-de-Testes-com-Playwright-Python-e-Pytest\PageObjects\.venv" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
