@@ -1,21 +1,18 @@
-class base_page:
+from playwright.sync_api import Page
 
-    def __init__(self, page):
+
+class BasePage:
+    def __init__(self, page: Page):
         self.page = page
-        self.page.goto("https://automationexercise.com/")
 
-        self.botaohome = page.get_by_role("link", name="Home")
-        self.products = page.get_by_role("link", name="Products")
-        self.carrinho = page.get_by_role("link", name="Cart")
-        self.botaoCadastrar_login = page.get_by_role(
-            "link", name=" Signup / Login"
-        )
+    def acessar_home(self):
+        self.page.goto("/")
 
-    def home(self):
-        self.page.goto("https://automationexercise.com/")
+    def acessar_produtos(self):
+        self.page.goto("/products")
 
-    def acessarCarrinho(self):
-        self.carrinho.click()
+    def acessar_carrinho(self):
+        self.page.goto("/view_cart")
 
-    def acessarLogin(self):
-        self.botaoCadastrar_login.click()
+    def acessar_cadastro_login(self):
+        self.page.goto("/login")

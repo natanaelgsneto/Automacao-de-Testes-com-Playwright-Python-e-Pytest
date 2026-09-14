@@ -1,5 +1,7 @@
 from playwright.sync_api import sync_playwright
+
 from Page.Cadastro_login import Cadastro_login
+
 with sync_playwright() as p:
     # O headless=False FORÇA o navegador a abrir na sua tela
     browser = p.chromium.launch(headless=False, slow_mo=1000)
