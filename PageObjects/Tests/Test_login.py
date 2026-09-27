@@ -1,8 +1,6 @@
-from Page.Cadastro_login import Cadastro_login
-
+from Page.Cadastro_login import CadastroLogin
 def test_login_valido(page):
-    login = Cadastro_login(page)
-    login.acessarLogin()
+    login = CadastroLogin(page)
     login.fazerLogin(email="ngsneto@gmail.com", senha="123")
 
     # Força a abertura do navegador e pausa o teste aqui!
