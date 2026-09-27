@@ -69,6 +69,7 @@ def test_validar_lista_produtos():
         query,
         produtos_esperados,
     )
-#EXECUTE
-# EXECUTE python -c "import sqlite3; c=sqlite3.connect('stores/loja.db'); c.execute('DELETE FROM produtos WHERE id IN (4,5,6)'); c.commit(); print(c.execute('SELECT id, nome, estoque FROM produtos ORDER BY id').fetchall()); c.close()" NA pasta  (.venv) PS C:\Users\Natan\PycharmProjects\Automacao-de-Testes-com-Playwright-Python-e-Pytest>
-# o resultado deve ser: 
+
+# EXECUTE:
+#  python -c "import sqlite3; c=sqlite3.connect('stores/loja.db'); c.execute('DELETE FROM produtos WHERE id IN (4,5,6)'); c.commit(); print(c.execute('SELECT id, nome, estoque FROM produtos ORDER BY id').fetchall()); c.close()"
+# o resultado deve ser: [(1, 'Camiseta Preta', 50), (2, 'Calca Jeans', 20), (3, 'Tenis Esportivo', 10), (7, 'Camiseta Preta', 50), (8, 'Calca Jeans', 20), (9, 'Tenis Esportivo', 10)]
