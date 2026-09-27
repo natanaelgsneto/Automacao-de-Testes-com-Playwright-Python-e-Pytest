@@ -1,0 +1,3 @@
+Nome: João
+Idade: 30
+Cidade: São Paulo

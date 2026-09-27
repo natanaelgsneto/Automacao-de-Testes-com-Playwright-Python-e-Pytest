@@ -1,8 +1,6 @@
-from base_page import base_page
+from Page.base_page import BasePage
 
-
-class Cadastro_login(base_page):
-
+class CadastroLogin(BasePage):
     def __init__(self, page):
         super().__init__(page)
 
