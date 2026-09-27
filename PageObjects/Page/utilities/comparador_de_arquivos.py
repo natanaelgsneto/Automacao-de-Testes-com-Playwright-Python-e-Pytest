@@ -1,67 +1,135 @@
-import re
-from openpyxl import load_workbook
-import pandas as pd
 import os
+import re
 import tempfile
-import PyPDF2
+from pathlib import Path
 from typing import Optional
 
+import pandas as pd
+import PyPDF2
 
-def comparar_arquivos(arquivo_base, arquivo_atual, linhas_ignorar=None, padrao_ignorar='', bytes_ignorar=0,
-                      encoding='utf-8'):
+
+# ==========================================================
+# CAMINHOS DO PROJETO
+# ==========================================================
+
+# Local deste arquivo:
+# PageObjects/Page/utilities/comparador_de_arquivos.py
+#
+# A pasta raiz será:
+# PageObjects/
+
+PASTA_PROJETO = Path(__file__).resolve().parents[2]
+PASTA_ARQUIVOS = PASTA_PROJETO / "Arquivos"
+
+
+# ==========================================================
+# FUNÇÕES AUXILIARES
+# ==========================================================
+
+def contar_bytes_diferentes(texto_base: str, texto_atual: str) -> int:
     """
-    Faz a comparação linha por linha de dois arquivos
-    Caso algum arquivo tenha linhas a mais, será apresentado a mensagem "Os arquivos têm tamanhos diferentes, podem existir mais diferenças!"
-    Caso seja necessario uma ou mais linhas especificas do arquivo, passar linhas em forma de lista no parametro "linhas_ignorar"
-    Caso queira ignorar tag ou algum padrão, passar na variavel 'padrao_ignorar' (precisa ser um padrão ReGex)
-    Caso queira ignorar uma quantidade de bytes especifica, passar o parametro bytes_ignorar, lembrar de alterar no arquivo base para sempre ser um caracter diferente
+    Conta quantos bytes são diferentes entre dois textos.
     """
+    bytes_base = texto_base.encode("utf-8")
+    bytes_atual = texto_atual.encode("utf-8")
+
+    diferencas = 0
+    tamanho_maximo = max(len(bytes_base), len(bytes_atual))
+
+    for indice in range(tamanho_maximo):
+        byte_base = bytes_base[indice] if indice < len(bytes_base) else None
+        byte_atual = bytes_atual[indice] if indice < len(bytes_atual) else None
+
+        if byte_base != byte_atual:
+            diferencas += 1
+
+    return diferencas
+
+
+def validar_arquivos(arquivo_base: str, arquivo_atual: str) -> None:
+    """
+    Verifica se os dois arquivos existem.
+    """
+    if not os.path.isfile(arquivo_base):
+        raise FileNotFoundError(f"Arquivo base não encontrado: {arquivo_base}")
+
+    if not os.path.isfile(arquivo_atual):
+        raise FileNotFoundError(f"Arquivo atual não encontrado: {arquivo_atual}")
+
+
+# ==========================================================
+# COMPARAÇÃO DE ARQUIVOS DE TEXTO
+# ==========================================================
+
+def comparar_arquivos(
+    arquivo_base: str,
+    arquivo_atual: str,
+    linhas_ignorar: Optional[list[int]] = None,
+    padrao_ignorar: str = "",
+    bytes_ignorar: int = 0,
+    encoding: str = "utf-8",
+) -> None:
+    """
+    Compara dois arquivos de texto linha por linha.
+
+    linhas_ignorar:
+        Lista de linhas que não devem ser comparadas.
+        A numeração começa em 1.
+
+    padrao_ignorar:
+        Expressão regular que será removida antes da comparação.
+
+    bytes_ignorar:
+        Quantidade máxima de bytes diferentes permitida.
+    """
+    validar_arquivos(arquivo_base, arquivo_atual)
+
     if linhas_ignorar is None:
         linhas_ignorar = []
-    with open(arquivo_base, 'r', encoding=encoding) as f1, open(arquivo_atual, 'r', encoding=encoding) as f2:
-        linhas_arquivo1 = f1.readlines()
-        linhas_arquivo2 = f2.readlines()
-    tem_diferenca = False
-    bytes_diferenca = 0
-    for i, (linha1, linha2) in enumerate(zip(linhas_arquivo1, linhas_arquivo2)):
-        if (i + 1) in linhas_ignorar:
+
+    with open(arquivo_base, "r", encoding=encoding) as arquivo1:
+        linhas_base = arquivo1.readlines()
+
+    with open(arquivo_atual, "r", encoding=encoding) as arquivo2:
+        linhas_atual = arquivo2.readlines()
+
+    if not linhas_atual:
+        raise AssertionError("O arquivo atual está vazio.")
+
+    if len(linhas_base) != len(linhas_atual):
+        raise AssertionError("Os arquivos possuem quantidades diferentes de linhas.")
+
+    total_bytes_diferentes = 0
+
+    for indice, (linha_base, linha_atual) in enumerate(
+        zip(linhas_base, linhas_atual), start=1
+    ):
+        if indice in linhas_ignorar:
             continue
+
         if padrao_ignorar:
-            linha1 = re.sub(padrao_ignorar, '', linha1, flags=re.DOTALL)
-            linha2 = re.sub(padrao_ignorar, '', linha2, flags=re.DOTALL)
-        if linha1 != linha2:
-            print(f'Diferença na linha {i + 1}:')
-            print(f'Arquivo Base:  {linha1.strip()}')
-            print(f'Arquivo Atual: {linha2.strip()}')
-            bytes_linha1 = linha1.encode()
-            bytes_linha2 = linha2.encode()
-            max_len = max(len(bytes_linha1), len(bytes_linha2))
-            for j in range(max_len):
-                try:
-                    if bytes_linha1[j] != bytes_linha2[j]:
-                        bytes_diferenca += 1
-                except IndexError:
-                    bytes_diferenca += 1
-            if bytes_diferenca > bytes_ignorar or bytes_ignorar == 0:
-                tem_diferenca = True
+            linha_base = re.sub(
+                padrao_ignorar, "", linha_base, flags=re.DOTALL
+            )
+            linha_atual = re.sub(
+                padrao_ignorar, "", linha_atual, flags=re.DOTALL
+            )
 
-    assert len(linhas_arquivo2) > 0, 'Arquivo atual está em branco, Verifique!'
+        total_bytes_diferentes += contar_bytes_diferentes(
+            linha_base, linha_atual
+        )
 
-    assert len(linhas_arquivo1) == len(
-        linhas_arquivo2), 'Os arquivos têm tamanhos diferentes, podem existir mais diferenças!'
+    if total_bytes_diferentes > bytes_ignorar:
+        raise AssertionError(
+            f"Arquivos de texto diferentes. "
+            f"Bytes diferentes: {total_bytes_diferentes}. "
+            f"Tolerância: {bytes_ignorar}."
+        )
 
-    if not tem_diferenca:
-        print(f'\nArquivos {arquivo_base} e {arquivo_atual} são iguais!, estão sendo ignorados {bytes_ignorar} Bytes')
 
-    assert not tem_diferenca, f'\nArquivos com diferenças' \
-                              f'\n{bytes_diferenca} Bytes de diferença!, foi configurado para ignorar {bytes_ignorar} Bytes' \
-                              f'\nPara mais informações compare os arquivos Base: {arquivo_base} e Atual: {arquivo_atual} ' \
-                              f'com algum utilitario de sua preferencia'
-    assert bytes_ignorar == bytes_diferenca, (
-        f'A quantidade de bytes a ingorar não é a mesma que a diferença de bytes entre os arquivos, verifique!\n'
-        f'Bytes ignorar: {bytes_ignorar}\n'
-        f'Bytes diferença: {bytes_diferenca}')
-
+# ==========================================================
+# COMPARAÇÃO DE ARQUIVOS EXCEL
+# ==========================================================
 
 def comparar_arquivos_excel(
     arquivo_base: str,
@@ -70,487 +138,186 @@ def comparar_arquivos_excel(
     comparar_headers: bool = True,
 ) -> None:
     """
-    Compara duas planilhas Excel célula a célula, incluindo os cabeçalhos.
+    Compara duas planilhas Excel célula por célula.
 
-    Suporta arquivos .xls (via xlrd) e .xlsx (via openpyxl). A comparação é feita
-    sobre os valores das células convertidos para string, garantindo compatibilidade
-    entre tipos mistos.
+    Compara a primeira planilha de cada arquivo.
 
-    Args:
-        arquivo_base: Caminho para a planilha de referência (gabarito).
-        arquivo_atual: Caminho para a planilha gerada pelo sistema sob teste.
-        bytes_ignorar: Tolerância em bytes entre as planilhas. Se a diferença total
-            for exatamente igual a este valor, os arquivos são considerados equivalentes.
-            Use 0 para exigir igualdade total.
-        comparar_headers: Se True (padrão), inclui a linha de cabeçalho na comparação.
-            Passe False para ignorar diferenças nos nomes das colunas.
+    bytes_ignorar:
+        Quantidade máxima de bytes diferentes permitida.
 
-    Raises:
-        AssertionError: Se as planilhas tiverem dimensões diferentes.
-        AssertionError: Se houver diferenças de conteúdo além da tolerância configurada.
-        AssertionError: Se `bytes_ignorar` for maior que zero mas a diferença real
-            não for exatamente igual a ele.
+    comparar_headers:
+        Quando True, compara também os nomes das colunas.
     """
-    engine_base = 'xlrd' if arquivo_base.endswith('.xls') else 'openpyxl'
-    engine_atual = 'xlrd' if arquivo_atual.endswith('.xls') else 'openpyxl'
+    validar_arquivos(arquivo_base, arquivo_atual)
 
-    df_base = pd.read_excel(arquivo_base, engine=engine_base).fillna('')
-    df_atual = pd.read_excel(arquivo_atual, engine=engine_atual).fillna('')
+    engine_base = (
+        "xlrd" if arquivo_base.lower().endswith(".xls") else "openpyxl"
+    )
+    engine_atual = (
+        "xlrd" if arquivo_atual.lower().endswith(".xls") else "openpyxl"
+    )
 
-    tem_diferenca = False
-    bytes_diferenca = 0
+    df_base = pd.read_excel(
+        arquivo_base,
+        engine=engine_base
+    ).fillna("")
+
+    df_atual = pd.read_excel(
+        arquivo_atual,
+        engine=engine_atual
+    ).fillna("")
 
     if df_base.shape != df_atual.shape:
-        raise AssertionError("As planilhas não têm o mesmo tamanho, podem existir mais diferenças")
+        raise AssertionError(
+            "As planilhas possuem quantidades diferentes de linhas ou colunas."
+        )
 
+    total_bytes_diferentes = 0
+
+    # Compara os cabeçalhos.
     if comparar_headers:
         headers_base = list(df_base.columns)
         headers_atual = list(df_atual.columns)
+
         if headers_base != headers_atual:
-            print("Diferença nos cabeçalhos:")
-            print(f"  Base:  {headers_base}")
-            print(f"  Atual: {headers_atual}")
+            total_bytes_diferentes += contar_bytes_diferentes(
+                str(headers_base),
+                str(headers_atual)
+            )
 
-    for row_idx in range(df_base.shape[0]):
-        for col_idx in range(df_base.shape[1]):
-            cell1 = str(df_base.iat[row_idx, col_idx])
-            cell2 = str(df_atual.iat[row_idx, col_idx])
-            if cell1 != cell2:
-                nome_coluna = df_base.columns[col_idx]
-                print(f"Diferença na linha {row_idx + 1}, coluna '{nome_coluna}' (índice {col_idx + 1}):")
-                print(f'Arquivo Base:  {cell1}')
-                print(f'Arquivo Atual: {cell2}')
-                max_len = max(len(cell1.encode()), len(cell2.encode()))
-                for j in range(max_len):
-                    try:
-                        if cell1.encode()[j] != cell2.encode()[j]:
-                            bytes_diferenca += 1
-                    except IndexError:
-                        bytes_diferenca += 1
-                if bytes_diferenca > bytes_ignorar or bytes_ignorar == 0:
-                    tem_diferenca = True
+    # Compara os valores das células.
+    for linha in range(df_base.shape[0]):
+        for coluna in range(df_base.shape[1]):
+            valor_base = str(df_base.iat[linha, coluna])
+            valor_atual = str(df_atual.iat[linha, coluna])
 
-    if not tem_diferenca:
-        print(f'\nArquivos {arquivo_base} e {arquivo_atual} são iguais!, estão sendo ignorados {bytes_ignorar} Bytes')
+            if valor_base != valor_atual:
+                total_bytes_diferentes += contar_bytes_diferentes(
+                    valor_base,
+                    valor_atual
+                )
 
-    assert not tem_diferenca, (
-        f'\nArquivos com diferenças'
-        f'\n{bytes_diferenca} Bytes de diferença!, foi configurado para ignorar {bytes_ignorar} Bytes'
-        f'\nPara mais informações compare os arquivos Base: {arquivo_base} e Atual: {arquivo_atual} '
-        f'com algum utilitário de sua preferência'
-    )
+    if total_bytes_diferentes > bytes_ignorar:
+        raise AssertionError(
+            f"Planilhas Excel diferentes. "
+            f"Bytes diferentes: {total_bytes_diferentes}. "
+            f"Tolerância: {bytes_ignorar}."
+        )
 
-    assert bytes_ignorar == bytes_diferenca, (
-        f'A quantidade de bytes a ignorar não é a mesma que a diferença de bytes entre os arquivos, verifique!\n'
-        f'Bytes ignorar: {bytes_ignorar}\n'
-        f'Bytes diferença: {bytes_diferenca}'
-    )
 
+# ==========================================================
+# CONVERSÃO DE PDF PARA TEXTO
+# ==========================================================
 
 def converter_pdf_para_texto(arquivo_pdf: str) -> str:
     """
-    Converte um arquivo PDF em texto simples para comparação em testes.
-
-    O texto extraído é normalizado para facilitar comparações consistentes:
-    - Quebras de linha múltiplas são colapsadas em uma única.
-    - Espaços e tabulações consecutivos são reduzidos a um único espaço.
-    - Espaços em branco no início e fim são removidos.
-
-    Args:
-        arquivo_pdf: Caminho para o arquivo PDF a ser convertido.
-
-    Returns:
-        String com o texto extraído e normalizado de todas as páginas.
-
-    Raises:
-        RuntimeError: Se ocorrer erro durante a leitura ou extração do PDF.
+    Extrai e normaliza o texto de um arquivo PDF.
     """
+    validar_arquivos(arquivo_pdf, arquivo_pdf)
+
     paginas_texto = []
 
     try:
-        with open(arquivo_pdf, 'rb') as f:
-            leitor_pdf = PyPDF2.PdfReader(f)
+        with open(arquivo_pdf, "rb") as arquivo:
+            leitor_pdf = PyPDF2.PdfReader(arquivo)
 
             for pagina in leitor_pdf.pages:
-                texto_pagina = pagina.extract_text()
-                if texto_pagina:
-                    paginas_texto.append(texto_pagina)
+                texto = pagina.extract_text()
 
-    except Exception as e:
-        raise RuntimeError(f"Erro ao ler o PDF '{arquivo_pdf}': {e}") from e
+                if texto:
+                    paginas_texto.append(texto)
 
-    texto = "\n".join(paginas_texto)
+    except Exception as erro:
+        raise RuntimeError(
+            f"Não foi possível ler o PDF: {arquivo_pdf}"
+        ) from erro
 
-    texto = texto.replace('\r', '\n')
-    texto = re.sub(r'\n+', '\n', texto)
-    texto = re.sub(r'[ \t]+', ' ', texto)
-    texto = texto.strip()
+    texto_completo = "\n".join(paginas_texto)
+    texto_completo = texto_completo.replace("\r", "\n")
+    texto_completo = re.sub(r"\n+", "\n", texto_completo)
+    texto_completo = re.sub(r"[ \t]+", " ", texto_completo)
 
-    return texto
+    return texto_completo.strip()
 
+
+# ==========================================================
+# CONVERSÃO E COMPARAÇÃO DE PDF
+# ==========================================================
 
 def converter_e_comparar_pdf(
     arquivo_base: str,
     arquivo_atual: str,
     linhas_ignorar: Optional[list[int]] = None,
-    padrao_ignorar: str = '',
+    padrao_ignorar: str = "",
     bytes_ignorar: int = 0,
-    encoding: str = 'utf-8',
+    encoding: str = "utf-8",
 ) -> None:
     """
-    Extrai o texto de PDFs e os compara linha por linha.
-
-    O texto extraído é salvo em arquivos temporários gerenciados automaticamente
-    (removidos ao final, mesmo em caso de falha). Se `arquivo_base` não for um PDF,
-    ele é usado diretamente como gabarito em texto puro — útil para manter arquivos
-    de referência versionados sem precisar de PDFs.
-
-    O encoding padrão desta função é UTF-8, mais adequado para texto extraído de PDF
-    do que latin-1 (usado nos comparadores de arquivos de texto puro).
-
-    Args:
-        arquivo_base: Caminho para o PDF de referência (gabarito), ou arquivo de texto
-            puro caso o gabarito já esteja em formato .txt.
-        arquivo_atual: Caminho para o PDF gerado pelo sistema sob teste.
-        linhas_ignorar: Lista de números de linha (1-based) a ignorar na comparação.
-        padrao_ignorar: Padrão regex removido de cada linha antes da comparação.
-        bytes_ignorar: Tolerância em bytes. Ver docstring de `comparar_arquivos`.
-        encoding: Encoding para escrita dos arquivos temporários. Padrão: 'utf-8'.
-
-    Raises:
-        RuntimeError: Se falhar a extração de texto de algum PDF.
-        AssertionError: Propagado de `comparar_arquivos` em caso de diferenças.
+    Extrai o texto de dois PDFs e compara o conteúdo.
     """
-    with tempfile.NamedTemporaryFile(
-        mode='w', suffix='.txt', encoding=encoding, delete=False
-    ) as f_atual:
-        temp_atual = f_atual.name
-        f_atual.write(converter_pdf_para_texto(arquivo_atual))
+    validar_arquivos(arquivo_base, arquivo_atual)
 
-    temp_base = None
+    arquivo_temporario_base = None
+    arquivo_temporario_atual = None
 
     try:
-        if arquivo_base.lower().endswith('.pdf'):
+        texto_atual = converter_pdf_para_texto(arquivo_atual)
+
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            suffix=".txt",
+            encoding=encoding,
+            delete=False
+        ) as temporario:
+            arquivo_temporario_atual = temporario.name
+            temporario.write(texto_atual)
+
+        if arquivo_base.lower().endswith(".pdf"):
+            texto_base = converter_pdf_para_texto(arquivo_base)
+
             with tempfile.NamedTemporaryFile(
-                mode='w', suffix='.txt', encoding=encoding, delete=False
-            ) as f_base:
-                temp_base = f_base.name
-                f_base.write(converter_pdf_para_texto(arquivo_base))
-            base_para_comparar = temp_base
+                mode="w",
+                suffix=".txt",
+                encoding=encoding,
+                delete=False
+            ) as temporario:
+                arquivo_temporario_base = temporario.name
+                temporario.write(texto_base)
+
+            base_para_comparar = arquivo_temporario_base
         else:
             base_para_comparar = arquivo_base
 
-        comparar_arquivos(base_para_comparar, temp_atual, linhas_ignorar, padrao_ignorar, bytes_ignorar,
-                          encoding=encoding)
+        comparar_arquivos(
+            arquivo_base=base_para_comparar,
+            arquivo_atual=arquivo_temporario_atual,
+            linhas_ignorar=linhas_ignorar,
+            padrao_ignorar=padrao_ignorar,
+            bytes_ignorar=bytes_ignorar,
+            encoding=encoding,
+        )
+
     finally:
-        os.remove(temp_atual)
-        if temp_base and os.path.exists(temp_base):
-            os.remove(temp_base)
+        if arquivo_temporario_atual and os.path.exists(
+            arquivo_temporario_atual
+        ):
+            os.remove(arquivo_temporario_atual)
 
-r"""
-comparar_arquivos(arquivo_base=r'C:\Users\Pichau\Desktop\arquivos\relatorio_base.txt',
-                  arquivo_atual=r'C:\Users\Pichau\Desktop\arquivos\relatorio_atual.txt',
-                  padrao_ignorar=r"\d{2}/\d{2}/\d{4}")
+        if arquivo_temporario_base and os.path.exists(
+            arquivo_temporario_base
+        ):
+            os.remove(arquivo_temporario_base)
 
-comparar_arquivos_excel(r'C:\Users\Pichau\Desktop\arquivos\planilha_base.xlsx',
-                        r'C:\Users\Pichau\Desktop\arquivos\planilha_atual.xlsx',
-                        )
+# ==========================================================
+# EXECUÇÃO
+# ==========================================================
 
-converter_e_comparar_pdf(r'C:\Users\Pichau\Desktop\arquivos\relatorio_base.pdf',
-                        r'C:\Users\Pichau\Desktop\arquivos\relatorio_atual.pdf',
-                        )
-"""
+if __name__ == "__main__":
+    print("Iniciando comparação dos arquivos Excel...")
 
-import re
-from openpyxl import load_workbook
-import pandas as pd
-import os
-import tempfile
-import PyPDF2
-from typing import Optional
-
-
-def comparar_arquivos(arquivo_base, arquivo_atual, linhas_ignorar=None, padrao_ignorar='', bytes_ignorar=0,
-                      encoding='utf-8'):
-    """
-    Faz a comparação linha por linha de dois arquivos
-    Caso algum arquivo tenha linhas a mais, será apresentado a mensagem "Os arquivos têm tamanhos diferentes, podem existir mais diferenças!"
-    Caso seja necessario uma ou mais linhas especificas do arquivo, passar linhas em forma de lista no parametro "linhas_ignorar"
-    Caso queira ignorar tag ou algum padrão, passar na variavel 'padrao_ignorar' (precisa ser um padrão ReGex)
-    Caso queira ignorar uma quantidade de bytes especifica, passar o parametro bytes_ignorar, lembrar de alterar no arquivo base para sempre ser um caracter diferente
-    """
-    if linhas_ignorar is None:
-        linhas_ignorar = []
-    with open(arquivo_base, 'r', encoding=encoding) as f1, open(arquivo_atual, 'r', encoding=encoding) as f2:
-        linhas_arquivo1 = f1.readlines()
-        linhas_arquivo2 = f2.readlines()
-    tem_diferenca = False
-    bytes_diferenca = 0
-    for i, (linha1, linha2) in enumerate(zip(linhas_arquivo1, linhas_arquivo2)):
-        if (i + 1) in linhas_ignorar:
-            continue
-        if padrao_ignorar:
-            linha1 = re.sub(padrao_ignorar, '', linha1, flags=re.DOTALL)
-            linha2 = re.sub(padrao_ignorar, '', linha2, flags=re.DOTALL)
-        if linha1 != linha2:
-            print(f'Diferença na linha {i + 1}:')
-            print(f'Arquivo Base:  {linha1.strip()}')
-            print(f'Arquivo Atual: {linha2.strip()}')
-            bytes_linha1 = linha1.encode()
-            bytes_linha2 = linha2.encode()
-            max_len = max(len(bytes_linha1), len(bytes_linha2))
-            for j in range(max_len):
-                try:
-                    if bytes_linha1[j] != bytes_linha2[j]:
-                        bytes_diferenca += 1
-                except IndexError:
-                    bytes_diferenca += 1
-            if bytes_diferenca > bytes_ignorar or bytes_ignorar == 0:
-                tem_diferenca = True
-
-    assert len(linhas_arquivo2) > 0, 'Arquivo atual está em branco, Verifique!'
-
-    assert len(linhas_arquivo1) == len(
-        linhas_arquivo2), 'Os arquivos têm tamanhos diferentes, podem existir mais diferenças!'
-
-    if not tem_diferenca:
-        print(f'\nArquivos {arquivo_base} e {arquivo_atual} são iguais!, estão sendo ignorados {bytes_ignorar} Bytes')
-
-    assert not tem_diferenca, f'\nArquivos com diferenças' \
-                              f'\n{bytes_diferenca} Bytes de diferença!, foi configurado para ignorar {bytes_ignorar} Bytes' \
-                              f'\nPara mais informações compare os arquivos Base: {arquivo_base} e Atual: {arquivo_atual} ' \
-                              f'com algum utilitario de sua preferencia'
-    assert bytes_ignorar == bytes_diferenca, (
-        f'A quantidade de bytes a ingorar não é a mesma que a diferença de bytes entre os arquivos, verifique!\n'
-        f'Bytes ignorar: {bytes_ignorar}\n'
-        f'Bytes diferença: {bytes_diferenca}')
-
-
-def comparar_arquivos_excel(
-    arquivo_base: str,
-    arquivo_atual: str,
-    bytes_ignorar: int = 0,
-    comparar_headers: bool = True,
-) -> None:
-    """
-    Compara duas planilhas Excel célula a célula, incluindo os cabeçalhos.
-
-    Suporta arquivos .xls (via xlrd) e .xlsx (via openpyxl). A comparação é feita
-    sobre os valores das células convertidos para string, garantindo compatibilidade
-    entre tipos mistos.
-
-    Args:
-        arquivo_base: Caminho para a planilha de referência (gabarito).
-        arquivo_atual: Caminho para a planilha gerada pelo sistema sob teste.
-        bytes_ignorar: Tolerância em bytes entre as planilhas. Se a diferença total
-            for exatamente igual a este valor, os arquivos são considerados equivalentes.
-            Use 0 para exigir igualdade total.
-        comparar_headers: Se True (padrão), inclui a linha de cabeçalho na comparação.
-            Passe False para ignorar diferenças nos nomes das colunas.
-
-    Raises:
-        AssertionError: Se as planilhas tiverem dimensões diferentes.
-        AssertionError: Se houver diferenças de conteúdo além da tolerância configurada.
-        AssertionError: Se `bytes_ignorar` for maior que zero mas a diferença real
-            não for exatamente igual a ele.
-    """
-    engine_base = 'xlrd' if arquivo_base.endswith('.xls') else 'openpyxl'
-    engine_atual = 'xlrd' if arquivo_atual.endswith('.xls') else 'openpyxl'
-
-    df_base = pd.read_excel(arquivo_base, engine=engine_base).fillna('')
-    df_atual = pd.read_excel(arquivo_atual, engine=engine_atual).fillna('')
-
-    tem_diferenca = False
-    bytes_diferenca = 0
-
-    if df_base.shape != df_atual.shape:
-        raise AssertionError("As planilhas não têm o mesmo tamanho, podem existir mais diferenças")
-
-    if comparar_headers:
-        headers_base = list(df_base.columns)
-        headers_atual = list(df_atual.columns)
-        if headers_base != headers_atual:
-            print("Diferença nos cabeçalhos:")
-            print(f"  Base:  {headers_base}")
-            print(f"  Atual: {headers_atual}")
-
-    for row_idx in range(df_base.shape[0]):
-        for col_idx in range(df_base.shape[1]):
-            cell1 = str(df_base.iat[row_idx, col_idx])
-            cell2 = str(df_atual.iat[row_idx, col_idx])
-            if cell1 != cell2:
-                nome_coluna = df_base.columns[col_idx]
-                print(f"Diferença na linha {row_idx + 1}, coluna '{nome_coluna}' (índice {col_idx + 1}):")
-                print(f'Arquivo Base:  {cell1}')
-                print(f'Arquivo Atual: {cell2}')
-                max_len = max(len(cell1.encode()), len(cell2.encode()))
-                for j in range(max_len):
-                    try:
-                        if cell1.encode()[j] != cell2.encode()[j]:
-                            bytes_diferenca += 1
-                    except IndexError:
-                        bytes_diferenca += 1
-                if bytes_diferenca > bytes_ignorar or bytes_ignorar == 0:
-                    tem_diferenca = True
-
-    if not tem_diferenca:
-        print(f'\nArquivos {arquivo_base} e {arquivo_atual} são iguais!, estão sendo ignorados {bytes_ignorar} Bytes')
-
-    assert not tem_diferenca, (
-        f'\nArquivos com diferenças'
-        f'\n{bytes_diferenca} Bytes de diferença!, foi configurado para ignorar {bytes_ignorar} Bytes'
-        f'\nPara mais informações compare os arquivos Base: {arquivo_base} e Atual: {arquivo_atual} '
-        f'com algum utilitário de sua preferência'
-    )
-
-    assert bytes_ignorar == bytes_diferenca, (
-        f'A quantidade de bytes a ignorar não é a mesma que a diferença de bytes entre os arquivos, verifique!\n'
-        f'Bytes ignorar: {bytes_ignorar}\n'
-        f'Bytes diferença: {bytes_diferenca}'
-    )
-
-
-def converter_pdf_para_texto(arquivo_pdf: str) -> str:
-    """
-    Converte um arquivo PDF em texto simples para comparação em testes.
-
-    O texto extraído é normalizado para facilitar comparações consistentes:
-    - Quebras de linha múltiplas são colapsadas em uma única.
-    - Espaços e tabulações consecutivos são reduzidos a um único espaço.
-    - Espaços em branco no início e fim são removidos.
-
-    Args:
-        arquivo_pdf: Caminho para o arquivo PDF a ser convertido.
-
-    Returns:
-        String com o texto extraído e normalizado de todas as páginas.
-
-    Raises:
-        RuntimeError: Se ocorrer erro durante a leitura ou extração do PDF.
-    """
-    paginas_texto = []
-
-    try:
-        with open(arquivo_pdf, 'rb') as f:
-            leitor_pdf = PyPDF2.PdfReader(f)
-
-            for pagina in leitor_pdf.pages:
-                texto_pagina = pagina.extract_text()
-                if texto_pagina:
-                    paginas_texto.append(texto_pagina)
-
-    except Exception as e:
-        raise RuntimeError(f"Erro ao ler o PDF '{arquivo_pdf}': {e}") from e
-
-    texto = "\n".join(paginas_texto)
-
-    texto = texto.replace('\r', '\n')
-    texto = re.sub(r'\n+', '\n', texto)
-    texto = re.sub(r'[ \t]+', ' ', texto)
-    texto = texto.strip()
-
-    return texto
-
-
-def converter_e_comparar_pdf(
-    arquivo_base: str,
-    arquivo_atual: str,
-    linhas_ignorar: Optional[list[int]] = None,
-    padrao_ignorar: str = '',
-    bytes_ignorar: int = 0,
-    encoding: str = 'utf-8',
-) -> None:
-    """
-    Extrai o texto de PDFs e os compara linha por linha.
-
-    O texto extraído é salvo em arquivos temporários gerenciados automaticamente
-    (removidos ao final, mesmo em caso de falha). Se `arquivo_base` não for um PDF,
-    ele é usado diretamente como gabarito em texto puro — útil para manter arquivos
-    de referência versionados sem precisar de PDFs.
-
-    O encoding padrão desta função é UTF-8, mais adequado para texto extraído de PDF
-    do que latin-1 (usado nos comparadores de arquivos de texto puro).
-
-    Args:
-        arquivo_base: Caminho para o PDF de referência (gabarito), ou arquivo de texto
-            puro caso o gabarito já esteja em formato .txt.
-        arquivo_atual: Caminho para o PDF gerado pelo sistema sob teste.
-        linhas_ignorar: Lista de números de linha (1-based) a ignorar na comparação.
-        padrao_ignorar: Padrão regex removido de cada linha antes da comparação.
-        bytes_ignorar: Tolerância em bytes. Ver docstring de `comparar_arquivos`.
-        encoding: Encoding para escrita dos arquivos temporários. Padrão: 'utf-8'.
-
-    Raises:
-        RuntimeError: Se falhar a extração de texto de algum PDF.
-        AssertionError: Propagado de `comparar_arquivos` em caso de diferenças.
-    """
-    with tempfile.NamedTemporaryFile(
-        mode='w', suffix='.txt', encoding=encoding, delete=False
-    ) as f_atual:
-        temp_atual = f_atual.name
-        f_atual.write(converter_pdf_para_texto(arquivo_atual))
-
-    temp_base = None
-
-    try:
-        if arquivo_base.lower().endswith('.pdf'):
-            with tempfile.NamedTemporaryFile(
-                mode='w', suffix='.txt', encoding=encoding, delete=False
-            ) as f_base:
-                temp_base = f_base.name
-                f_base.write(converter_pdf_para_texto(arquivo_base))
-            base_para_comparar = temp_base
-        else:
-            base_para_comparar = arquivo_base
-
-        comparar_arquivos(base_para_comparar, temp_atual, linhas_ignorar, padrao_ignorar, bytes_ignorar,
-                          encoding=encoding)
-    finally:
-        os.remove(temp_atual)
-        if temp_base and os.path.exists(temp_base):
-            os.remove(temp_base)
-
-r"""
-comparar_arquivos(arquivo_base=r'C:\Users\Pichau\Desktop\arquivos\relatorio_base.txt',
-                  arquivo_atual=r'C:\Users\Pichau\Desktop\arquivos\relatorio_atual.txt',
-                  padrao_ignorar=r"\d{2}/\d{2}/\d{4}")
-
-comparar_arquivos_excel(r'C:\Users\Pichau\Desktop\arquivos\planilha_base.xlsx',
-                        r'C:\Users\Pichau\Desktop\arquivos\planilha_atual.xlsx',
-                        )
-
-converter_e_comparar_pdf(r'C:\Users\Pichau\Desktop\arquivos\relatorio_base.pdf',
-                        r'C:\Users\Pichau\Desktop\arquivos\relatorio_atual.pdf',
-                        )
-"""
-try:
     comparar_arquivos_excel(
-        arquivo_base=r"D:\Automacao-de-Testes-com-Playwright-Python-e-Pytest\PageObjects\Arquivos\base.xlsx",
-        arquivo_atual=r"D:\Automacao-de-Testes-com-Playwright-Python-e-Pytest\PageObjects\Arquivos\atual.xlsx"
+        arquivo_base=str(PASTA_ARQUIVOS / "base.xlsx"),
+        arquivo_atual=str(PASTA_ARQUIVOS / "atual.xlsx"),
     )
 
-except AssertionError as erro:
-    print("\nResultado da comparação:")
-    print(erro)
-
-
-#O resultado escrito foi:
-#“Arquivos com diferenças. 1 Bytes de diferença! Foi configurado para ignorar 0 Bytes.”
-#A diferença encontrada foi na coluna Idade:
-#- Arquivo Base: 31
-#- Arquivo Atual: 30
-#Ou seja, os arquivos são diferentes.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    print("Comparação concluída: as planilhas são iguais!")
