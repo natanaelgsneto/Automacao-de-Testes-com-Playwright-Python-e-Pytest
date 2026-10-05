@@ -14,11 +14,22 @@ class CadastroLogin(BasePage):
         self.textoLogadoComo = self.page.get_by_text("Logged in as")
         self.linkLogout = self.page.get_by_role("link", name="Logout")
 
+        # Mensagem exibida quando o site recusa o email ou a senha
+        self.mensagemErroLogin = self.page.get_by_text("Your email or password is incorrect!")
+
     def fazerLogin(self, email="", senha=""):
         self.inputEmail.fill(email)
         self.password.fill(senha)
         self.botaologin.click()
 
     def validarLoginComSucesso(self):
+        # Espera o resultado do login: usuário logado ou mensagem de erro
+        expect(self.textoLogadoComo.or_(self.mensagemErroLogin)).to_be_visible()
+
+        assert not self.mensagemErroLogin.is_visible(), (
+            "O site recusou o login: 'Your email or password is incorrect!'. "
+            "Confira LOGIN_EMAIL e LOGIN_SENHA."
+        )
+
         expect(self.textoLogadoComo).to_be_visible()
         expect(self.linkLogout).to_be_visible()
