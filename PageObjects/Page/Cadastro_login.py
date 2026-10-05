@@ -1,3 +1,5 @@
+import re
+
 from playwright.sync_api import expect
 
 from Page.base_page import BasePage
@@ -33,3 +35,24 @@ class CadastroLogin(BasePage):
 
         expect(self.textoLogadoComo).to_be_visible()
         expect(self.linkLogout).to_be_visible()
+
+    def validarLoginRecusado(self):
+        # O formulário foi enviado e o site recusou email ou senha
+        expect(self.mensagemErroLogin).to_be_visible()
+        expect(self.linkLogout).to_be_hidden()
+
+    def validarCampoBloqueadoPeloNavegador(self, campo, motivo):
+        # Os campos são type="email" e required: o navegador impede o envio
+        # do formulário. "motivo" é a propriedade de ValidityState
+        # (valueMissing, typeMismatch), que não depende do idioma do navegador.
+        input_campo = {"email": self.inputEmail, "senha": self.password}[campo]
+
+        assert input_campo.evaluate("(el, motivo) => el.validity[motivo]", motivo), (
+            f"Campo {campo}: esperado validity.{motivo}, mas o navegador informou "
+            f"'{input_campo.evaluate('el => el.validationMessage')}'"
+        )
+
+        # Como o formulário não foi enviado, o site não responde nada
+        expect(self.page).to_have_url(re.compile(r"/login$"))
+        expect(self.mensagemErroLogin).to_be_hidden()
+        expect(self.linkLogout).to_be_hidden()
