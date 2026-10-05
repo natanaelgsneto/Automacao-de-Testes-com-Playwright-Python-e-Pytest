@@ -1,19 +1,12 @@
-import os
 from pathlib import Path
 
-import pytest
 from playwright.sync_api import expect
 
 
 ARQUIVO_SESSAO = Path("auth/state.json")
 
-def test_criar_sessao_autenticada(browser):
-    # Credenciais lidas das variáveis de ambiente (não ficam no código)
-    email = os.environ.get("LOGIN_EMAIL")
-    senha = os.environ.get("LOGIN_SENHA")
-
-    if not email or not senha:
-        pytest.fail("Defina as variáveis de ambiente LOGIN_EMAIL e LOGIN_SENHA")
+def test_criar_sessao_autenticada(browser, credenciais_login):
+    email, senha = credenciais_login
 
     ARQUIVO_SESSAO.parent.mkdir(parents=True, exist_ok=True)
 

@@ -4,13 +4,14 @@ from Page.carrinho import Carrinho
 from playwright.sync_api import expect
 
 
-def test_login(page):
+def test_login(page, credenciais_login):
+    email, senha = credenciais_login
     login = CadastroLogin(page)
 
     login.acessar_cadastro_login()
     login.fazerLogin(
-        email="teste@testeabcde.com",
-        senha="123456789"
+        email=email,
+        senha=senha
     )
 
     expect(

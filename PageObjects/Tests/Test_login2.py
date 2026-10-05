@@ -1,7 +1,9 @@
 from Page.Cadastro_login import CadastroLogin
 
 
-def test_login(page):
+def test_login(page, credenciais_login):
+    email, senha = credenciais_login
+
     # 1. Abre a página de login
     page.goto("https://automationexercise.com/login")
 
@@ -10,8 +12,8 @@ def test_login(page):
 
     # 3. Preenche os dados e tenta entrar
     login.fazerLogin(
-        email="ngsneto@gmail.com",
-        senha="123"
+        email=email,
+        senha=senha
     )
 
     # 4. Mantém a página aberta por 5 segundos

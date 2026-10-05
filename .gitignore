@@ -1,0 +1,11 @@
+# Sessões de login salvas (contêm cookies)
+auth/state.json
+playwright/auth/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Pytest
+.pytest_cache/
