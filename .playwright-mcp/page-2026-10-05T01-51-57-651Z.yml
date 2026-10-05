@@ -1,0 +1,138 @@
+- generic [active] [ref=f24e1]:
+  - banner [ref=f24e2]:
+    - generic [ref=f24e5]:
+      - link [ref=f24e8] [cursor=pointer]:
+        - /url: /
+        - img "Website for automation practice" [ref=f24e9]
+      - list [ref=f24e12]:
+        - listitem [ref=f24e13]:
+          - link " Home" [ref=f24e14] [cursor=pointer]:
+            - /url: /
+            - generic [ref=f24e15]: 
+            - text: Home
+        - listitem [ref=f24e16]:
+          - link " Products" [ref=f24e17] [cursor=pointer]:
+            - /url: /products
+            - generic [ref=f24e18]: 
+            - text: Products
+        - listitem [ref=f24e19]:
+          - link " Cart" [ref=f24e20] [cursor=pointer]:
+            - /url: /view_cart
+            - generic [ref=f24e21]: 
+            - text: Cart
+        - listitem [ref=f24e22]:
+          - link " Signup / Login" [ref=f24e23] [cursor=pointer]:
+            - /url: /login
+            - generic [ref=f24e24]: 
+            - text: Signup / Login
+        - listitem [ref=f24e25]:
+          - link " Test Cases" [ref=f24e26] [cursor=pointer]:
+            - /url: /test_cases
+            - generic [ref=f24e27]: 
+            - text: Test Cases
+        - listitem [ref=f24e28]:
+          - link " API Testing" [ref=f24e29] [cursor=pointer]:
+            - /url: /api_list
+            - generic [ref=f24e30]: 
+            - text: API Testing
+        - listitem [ref=f24e31]:
+          - link " Video Tutorials" [ref=f24e32] [cursor=pointer]:
+            - /url: https://www.youtube.com/c/AutomationExercise
+            - generic [ref=f24e33]: 
+            - text: Video Tutorials
+        - listitem [ref=f24e34]:
+          - link " Contact us" [ref=f24e35] [cursor=pointer]:
+            - /url: /contact_us
+            - generic [ref=f24e36]: 
+            - text: Contact us
+  - generic [ref=f24e38]:
+    - img "Website for practice" [ref=f24e39]
+    - textbox "Search Product" [ref=f24e40]: xyzinexistente
+    - button "" [ref=f24e41] [cursor=pointer]
+  - generic [ref=f24e45]:
+    - generic [ref=f24e47]:
+      - heading "Category" [level=2] [ref=f24e48]
+      - generic [ref=f24e49]:
+        - generic [ref=f24e51]:
+          - insertion [ref=f24e53]:
+            - generic [ref=f24e56]:
+              - heading "These are topics related to the article that might interest you" [level=2] [ref=f24e58]: Discover more
+              - link "Online clothing store" [ref=f24e59] [cursor=pointer]
+              - link "Digital Marketing Solutions" [ref=f24e64] [cursor=pointer]
+              - link "Women's Dresses" [ref=f24e69] [cursor=pointer]
+          - heading [level=4] [ref=f24e74]:
+            - link " Women" [ref=f24e75] [cursor=pointer]:
+              - /url: "#Women"
+              - generic [ref=f24e76]: 
+              - text: Women
+        - heading [level=4] [ref=f24e80]:
+          - link " Men" [ref=f24e81] [cursor=pointer]:
+            - /url: "#Men"
+            - generic [ref=f24e82]: 
+            - text: Men
+        - heading [level=4] [ref=f24e86]:
+          - link " Kids" [ref=f24e87] [cursor=pointer]:
+            - /url: "#Kids"
+            - generic [ref=f24e88]: 
+            - text: Kids
+      - generic [ref=f24e90]:
+        - heading "Brands" [level=2] [ref=f24e91]
+        - list [ref=f24e93]:
+          - listitem [ref=f24e94]:
+            - link "(6) Polo" [ref=f24e95] [cursor=pointer]:
+              - /url: /brand_products/Polo
+              - generic [ref=f24e96]: (6)
+              - text: Polo
+          - listitem [ref=f24e97]:
+            - link "(5) H&M" [ref=f24e98] [cursor=pointer]:
+              - /url: /brand_products/H&M
+              - generic [ref=f24e99]: (5)
+              - text: H&M
+          - listitem [ref=f24e100]:
+            - link "(5) Madame" [ref=f24e101] [cursor=pointer]:
+              - /url: /brand_products/Madame
+              - generic [ref=f24e102]: (5)
+              - text: Madame
+          - listitem [ref=f24e103]:
+            - link "(3) Mast & Harbour" [ref=f24e104] [cursor=pointer]:
+              - /url: /brand_products/Mast & Harbour
+              - generic [ref=f24e105]: (3)
+              - text: Mast & Harbour
+          - listitem [ref=f24e106]:
+            - link "(4) Babyhug" [ref=f24e107] [cursor=pointer]:
+              - /url: /brand_products/Babyhug
+              - generic [ref=f24e108]: (4)
+              - text: Babyhug
+          - listitem [ref=f24e109]:
+            - link "(3) Allen Solly Junior" [ref=f24e110] [cursor=pointer]:
+              - /url: /brand_products/Allen Solly Junior
+              - generic [ref=f24e111]: (3)
+              - text: Allen Solly Junior
+          - listitem [ref=f24e112]:
+            - link "(3) Kookie Kids" [ref=f24e113] [cursor=pointer]:
+              - /url: /brand_products/Kookie Kids
+              - generic [ref=f24e114]: (3)
+              - text: Kookie Kids
+          - listitem [ref=f24e115]:
+            - link "(5) Biba" [ref=f24e116] [cursor=pointer]:
+              - /url: /brand_products/Biba
+              - generic [ref=f24e117]: (5)
+              - text: Biba
+    - heading "Searched Products" [level=2] [ref=f24e120]
+  - insertion [ref=f24e122]:
+    - generic [ref=f24e125]:
+      - heading "These are topics related to the article that might interest you" [level=2] [ref=f24e127]: Discover more
+      - link "Men's Jeans" [ref=f24e128] [cursor=pointer]
+      - link "T-Shirts" [ref=f24e133] [cursor=pointer]
+      - link "Kids Clothing" [ref=f24e138] [cursor=pointer]
+      - link "Polo Brand Clothing" [ref=f24e143] [cursor=pointer]
+      - link "T SHIRT" [ref=f24e148] [cursor=pointer]
+  - contentinfo [ref=f24e153]:
+    - generic [ref=f24e158]:
+      - heading "Subscription" [level=2] [ref=f24e159]
+      - generic [ref=f24e160]:
+        - textbox "Your email address" [ref=f24e161]
+        - button "" [ref=f24e162] [cursor=pointer]
+        - paragraph [ref=f24e164]: Get the most recent updates from our site and be updated your self...
+    - paragraph [ref=f24e168]: Copyright © 2021 All rights reserved
+  - text: 
