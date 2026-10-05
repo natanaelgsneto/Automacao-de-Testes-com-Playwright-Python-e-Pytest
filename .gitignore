@@ -9,3 +9,6 @@ __pycache__/
 
 # Pytest
 .pytest_cache/
+
+# Configuração local do Claude Code
+.claude/settings.local.json
