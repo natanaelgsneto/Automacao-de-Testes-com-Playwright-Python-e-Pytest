@@ -1,4 +1,5 @@
 import os
+import re
 
 import pytest
 from playwright.sync_api import Playwright
@@ -27,3 +28,21 @@ def browser_context_args(
         **browser_context_args,
         **iphone,
     }
+
+
+# Domínios dos anúncios do Google exibidos pelo site
+DOMINIOS_ANUNCIOS = re.compile(
+    r"https?://([^/]+\.)?("
+    r"googlesyndication\.com|doubleclick\.net|googleadservices\.com|"
+    r"adservice\.google\.[a-z.]+|fundingchoicesmessages\.google\.com"
+    r")/"
+)
+
+
+@pytest.fixture
+def context(context):
+    # O site abre um anúncio de tela cheia (#google_vignette) ao trocar de
+    # página, que intercepta cliques e quebra os testes. Bloquear os
+    # anúncios deixa a página se comportar como sem eles.
+    context.route(DOMINIOS_ANUNCIOS, lambda route: route.abort())
+    return context
